@@ -13,18 +13,24 @@ const StudentSchema = new mongoose.Schema({
 
 const Student = mongoose.models.Student || mongoose.model("Student", StudentSchema);
 
-export default async function handler(req, res) {
+// GET method
+export async function GET(req) {
   await global.mongoose;
-
-  if (req.method === "GET") {
-    const students = await Student.find();
-    res.status(200).json(students);
-  }
-
-  if (req.method === "POST") {
-    const student = new Student(req.body);
-    await student.save();
-    res.status(201).json(student);
-  }
+  const students = await Student.find();
+  return new Response(JSON.stringify(students), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
 }
 
+// POST method
+export async function POST(req) {
+  await global.mongoose;
+  const body = await req.json();
+  const student = new Student(body);
+  await student.save();
+  return new Response(JSON.stringify(student), {
+    status: 201,
+    headers: { "Content-Type": "application/json" },
+  });
+}
